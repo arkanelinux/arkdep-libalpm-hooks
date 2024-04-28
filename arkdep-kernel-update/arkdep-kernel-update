@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# Only run if we are booted in to an arkdep install
+if grep -q 'initrd=\\arkdep\\' /proc/cmdline; then
+
+	# Get ID of currently booted install
+	declare -r deployment_id=($(grep -o -P '(?<=initrd=\\arkdep\\).*(?=\\initramfs)' /proc/cmdline))
+	declare -r installed_kernels=($(ls /usr/lib/modules))
+
+	# We should only have a single hit, error and quit if we have multiple
+	if [[ ${#deployment_id[@]} -gt 1 ]]; then
+		printf 'ERROR: Multiple hits in cmdline'
+		exit 1
+	fi
+
+	# Copy vmlinuz to deployment specific boot directory
+	cp /usr/lib/modules/${installed_kernels[0]}/vmlinuz /boot/arkdep/${deployment_id[0]}
+
+	# Regenerate the initramfs
+	dracut -q -k /usr/lib/modules/${installed_kernels[0]} \
+		-c /etc/dracut.conf \
+		--confdir /etc/dracut.conf.d \
+		--kernel-image /boot/arkdep/${deployment_id[0]}/vmlinuz \
+		--kver ${installed_kernels[0]} \
+		--force \
+		/boot/arkdep/${deployment_id[0]}/initramfs-linux.img
+
+fi
