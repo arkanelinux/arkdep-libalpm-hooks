@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Only run if we are booted in to an arkdep install
-if grep -q 'initrd=\\arkdep\\' /proc/cmdline; then
+if grep -rq 'initrd=\\arkdep\\' /proc/cmdline; then
 
 	# Get ID of currently booted install
 	declare -r deployment_id=($(grep -o -P '(?<=initrd=\\arkdep\\).*(?=\\initramfs)' /proc/cmdline))
