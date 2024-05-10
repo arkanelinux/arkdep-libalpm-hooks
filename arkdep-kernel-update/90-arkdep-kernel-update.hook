@@ -1,5 +1,6 @@
 [Trigger]
 Type = Path
+Operation = Install
 Operation = Upgrade
 Target = usr/lib/modules/*/vmlinuz
 Target = usr/lib/initcpio/*
@@ -8,3 +9,4 @@ Target = usr/lib/initcpio/*
 Description = Updating Arkdep kernel and initramfs...
 When = PostTransaction
 Exec = /usr/share/libalpm/scripts/arkdep-kernel-update
+NeedsTargets
